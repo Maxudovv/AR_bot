@@ -1,7 +1,7 @@
-from sqlite3.dbapi2 import Cursor
 import threading
 from datetime import datetime
 import time
+import sys
 
 from Sql_class import SqlDb
 from config import *
@@ -14,8 +14,8 @@ from icecream import ic
 def polling():
     print("polling...")
     database.connect()
-    old_tables = database.get_table()[1]
     new_tables = SqlDb.get_tables()
+    old_tables = database.get_table(new_tables)[1]
     if [table for table in new_tables if table not in old_tables]:
         database.set_old_table(new_tables)
         new_table_list = list(set(new_tables).difference(old_tables))
@@ -30,7 +30,10 @@ def scheduler():
     #schedule.every(10).seconds.do(polling)
     while True:
         schedule.run_pending()
-        time.sleep(2)
+        try:
+            time.sleep(2)
+        except KeyboardInterrupt:
+            sys.exit()
 
 
     

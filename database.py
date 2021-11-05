@@ -48,14 +48,19 @@ def set_table(array: list):
     conn.commit()
 
 def check_array() -> tuple:
+    connect()
     _all = cursor.execute("SELECT last, data FROM array_table").fetchone()
     #data = cursor.execute("SELECT data FROM array_table").fetchall()
     return bool(_all[0]), bool(_all[1])
 
-def get_table() -> tuple:
+def get_table(tables_array=[]) -> tuple:
+    connect()
     data, last = cursor.execute("SELECT data, last FROM array_table").fetchone()
     if last is not None:
         last = loads(last)
+    else:
+        set_old_table(tables_array)
+        last = get_table()[1]
     return loads(data), last
 
 def set_old_table(array: list):
@@ -71,6 +76,7 @@ def set_new_user(msg):
     conn.commit()
 
 def get_users_id():
+    connect()
     result = list()
     res = cursor.execute("SELECT id FROM bot_table").fetchall()
     for el in res:
@@ -78,6 +84,7 @@ def get_users_id():
     return result
 
 def delete_table_from_last(table: str):
+    connect()
     last = get_table()[1]
     cursor.execute("UPDATE array_table SET last=?", (last.remove(table),))
     conn.commit()

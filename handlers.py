@@ -1,6 +1,8 @@
-from sqlite3.dbapi2 import SQLITE_ALTER_TABLE
+from sqlite3.dbapi2 import SQLITE_ALTER_TABLE, Error
+import pymysql
 import telebot
 from telebot import types
+from icecream import ic
 
 import database
 from config import *
@@ -49,8 +51,10 @@ def jasdjasd(msg):
 
 
 def delete_table_from_main(table: list):
-    database.connect()
-    SqlDb.close_connect()
+    try:
+        SqlDb.close_connect()
+    except pymysql.err.Error:
+        pass
     connect, cur, server = SqlDb.connect_to_server()
 
     cur.execute(f"USE {db_name}")       # Работа с i91881_AR_CAFE_OFFERS
@@ -71,5 +75,16 @@ def delete_table_from_main(table: list):
 def callback_handler(call):
     if "DONE" in call.data:
         table = call.data.split("/")[1]
+        if table not in SqlDb.get_tables():
+            send_msg(call.message, f"Заказ <b>{table}</b> уже удалён из базы.")
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            return
         delete_table_from_main(table)
-        bot.send_message(call.message.chat.id, f"Заказ <b>{table}</b> успешно удалён из базы данных")
+        bot.edit_message_text(f"Заказ <b>{table}</b> успешно удалён из базы данных", call.message.chat.id,  call.message.message_id)
+        try:
+            users_id = database.get_users_id()
+            users_id.remove(int(call.message.chat.id))
+            for user in users_id:
+                bot.send_message(user, f"Заказ <b>{table}</b> успешно удалён из базы данных")
+        except TypeError as ex:
+            print(ex)

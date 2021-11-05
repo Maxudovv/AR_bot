@@ -19,6 +19,7 @@ class SqlDb:
 
     @classmethod
     def get_table_info(cls, table: str, time: str) -> str:
+        cursor = SqlDb.connect_to_server()[1]
         cursor.execute(f"USE {db_name}") # Подключаемся к нужному .db файлу.
         cursor.execute(f"SELECT `label`, `count` FROM `{table}`")
         res = cursor.fetchall()
@@ -48,6 +49,7 @@ class SqlDb:
 
     @staticmethod
     def get_tables() -> list:
+        cursor = SqlDb.connect_to_server()[1]
         cursor.execute(f"USE {db_name}") # Подключаемся к нужному .db файлу.
         cursor.execute("SHOW TABLES")
         tables = cursor.fetchall()
@@ -55,8 +57,6 @@ class SqlDb:
         for table in tables:
             tables_array.append(table[0])
         database.set_table(tables_array)
-        if database.get_table()[1] is None:
-            database.set_old_table(tables_array)
         return tables_array
 
     @staticmethod
