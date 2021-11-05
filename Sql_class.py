@@ -18,11 +18,11 @@ class SqlDb:
         self.get_tables()
 
     @classmethod
-    def get_table_info(cls, table: str):
+    def get_table_info(cls, table: str, time: str) -> str:
         cursor.execute(f"USE {db_name}") # Подключаемся к нужному .db файлу.
         cursor.execute(f"SELECT `label`, `count` FROM `{table}`")
         res = cursor.fetchall()
-        result_str = f"<b>Заказ номер {table}:</b>"
+        result_str = f"<b>Заказ номер {table}:</b>\nВремя заказа:    {time}"
         for order in res:
             label, count = order
             result_str += f"\n    <em>{label}    {count} шт.</em>"
@@ -57,7 +57,7 @@ class SqlDb:
         database.set_table(tables_array)
         if database.get_table()[1] is None:
             database.set_old_table(tables_array)
-        return tables_array, con, cursor
+        return tables_array
 
     @staticmethod
     def close_connect():

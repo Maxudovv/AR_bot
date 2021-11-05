@@ -1,7 +1,6 @@
 import sqlite3
 from pickle import loads, dumps
 import datetime
-import time
 
 def connect():
     global conn, cursor
