@@ -64,7 +64,9 @@ def delete_table_from_main(table: list):
     cur.execute(f"INSERT INTO `orders`(`table`) VALUES ({table})")
     connect.commit()
     
-    database.delete_table_from_last(table)
+    SqlDb.get_tables()
+    last = database.get_table()[1]
+    database.delete_table_from_last(table, last)
 
     connect.close()
     server.close()
@@ -76,11 +78,12 @@ def callback_handler(call):
     if "DONE" in call.data:
         table = call.data.split("/")[1]
         if table not in SqlDb.get_tables():
-            send_msg(call.message, f"Заказ <b>{table}</b> уже удалён из базы.")
+            #send_msg(call.message, f"Заказ <b>{table}</b> уже удалён из базы.")
             bot.delete_message(call.message.chat.id, call.message.message_id)
             return
         delete_table_from_main(table)
-        bot.edit_message_text(f"Заказ <b>{table}</b> успешно удалён из базы данных", call.message.chat.id,  call.message.message_id)
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+        #bot.edit_message_text(f"Заказ <b>{table}</b> успешно удалён из базы данных", call.message.chat.id,  call.message.message_id)
         try:
             users_id = database.get_users_id()
             users_id.remove(int(call.message.chat.id))

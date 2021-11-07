@@ -1,6 +1,8 @@
 import sqlite3
 from pickle import loads, dumps
 import datetime
+from icecream import ic
+
 
 def connect():
     global conn, cursor
@@ -83,8 +85,8 @@ def get_users_id():
         result.append(el[0])
     return result
 
-def delete_table_from_last(table: str):
+def delete_table_from_last(table: str, last: list):
     connect()
-    last = get_table()[1]
+    ic(last, table)
     cursor.execute("UPDATE array_table SET last=?", (last.remove(table),))
     conn.commit()
