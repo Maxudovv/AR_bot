@@ -68,7 +68,7 @@ def delete_table_from_main(table: str):
         return
 
     cur.execute(f"USE {db_ready}")  # Работа с i91881_ready_orders
-    cur.execute(f"INSERT INTO `orders`(`name`) VALUES ({table})")
+    cur.execute(f"INSERT INTO orders (`name`) VALUES (%s)", table)
     connect.commit()
     SqlDb.get_tables()
     last = database.get_table()[1]
