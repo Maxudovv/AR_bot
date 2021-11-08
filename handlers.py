@@ -24,15 +24,15 @@ def done_markup(table: str) -> types.InlineKeyboardMarkup:
 @bot.message_handler(commands=["start", "set", "orders"])
 def start_handler(msg):
     database.connect()
-    match msg.text.lower():
-        case "/start":
-            send_msg(msg, "Выполнена команда /start .")
-        case "/set":
-            database.set_new_user(msg)
-            send_msg(msg, "Вы успешно добавлены в базу данных.")
-        case "/orders":
-            text = get_all_tables()
-            send_msg(msg, text)
+    text = msg.text.lower()
+    if text == "/start":
+        send_msg(msg, "Выполнена команда /start .")
+    elif text == "/set":
+        database.set_new_user(msg)
+        send_msg(msg, "Вы успешно добавлены в базу данных.")
+    elif text == "/orders":
+        text = get_all_tables()
+        send_msg(msg, text)
 
 
 def get_all_tables():

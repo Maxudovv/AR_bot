@@ -25,8 +25,8 @@ def polling():
 
 
 def scheduler():
-    # schedule.every().minute.do(polling)
-    schedule.every(10).seconds.do(polling)
+    schedule.every().minute.do(polling)
+    # schedule.every(10).seconds.do(polling)
     while True:
         schedule.run_pending()
         time.sleep(2)
