@@ -33,16 +33,17 @@ def start_handler(msg):
     elif text == "/orders":
         text = get_all_tables()
         send_msg(msg, text)
+        SqlDb.close_connect()
 
 
 def get_all_tables():
-    cursor = SqlDb.connect_to_server()[1]
+    cursor = SqlDb.connect_to_mysql()[1]
     cursor.execute(f"USE {db_name}")
     cursor.execute(f"SHOW TABLES")
     tables = cursor.fetchall()
     text = "Невыполненные заказы:"
     for table in tables:
-        text += f"\n{table[0]}"
+        text += f"\n{table[0].upper()}"
     return text
 
 
@@ -56,19 +57,18 @@ def delete_table_from_main(table: str):
         SqlDb.close_connect()
     except pymysql.err.Error:
         pass
-    connect, cur, server = SqlDb.connect_to_server()
+    connect, cur = SqlDb.connect_to_mysql()
 
     cur.execute(f"USE {db_name}")  # Работа с i91881_AR_CAFE_OFFERS
     tables_array = SqlDb.get_tables()
 
-    ic(table, tables_array)
     try:
         cur.execute(f"DROP TABLE `{table}`")
     except pymysql.err.OperationalError:
         return
 
     cur.execute(f"USE {db_ready}")  # Работа с i91881_ready_orders
-    cur.execute(f"INSERT INTO `orders`(`name`) VALUES ({table})")
+    cur.execute(f"INSERT INTO orders (`name`) VALUES (%s)", table)
     connect.commit()
     SqlDb.get_tables()
     last = database.get_table()[1]
@@ -91,3 +91,5 @@ def callback_handler(call):
         users_id.remove(int(call.message.chat.id))
         for users_chat_id in users_id:
             bot.send_message(users_chat_id, f"Заказ <b>{table}</b> успешно удалён из базы данных")
+
+    SqlDb.close_connect()

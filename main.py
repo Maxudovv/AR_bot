@@ -1,16 +1,15 @@
 import threading
 from datetime import datetime
 import time
+import schedule
 
 from Sql_class import SqlDb
 import database
 from handlers import bot, done_markup
 
-import schedule
-
 
 def polling():
-    print("polling...")
+    # print("polling...")
     database.connect()
     new_tables = SqlDb.get_tables()
     old_tables = database.get_table(new_tables)[1]
@@ -22,6 +21,7 @@ def polling():
             text = SqlDb.get_table_info(table, times)
             for user in database.get_users_id():           
                 bot.send_message(user, text, reply_markup=done_markup(table))
+        SqlDb.close_connect()
 
 
 def scheduler():

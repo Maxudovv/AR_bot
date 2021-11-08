@@ -103,6 +103,8 @@ def get_users_id():
 
 def delete_table_from_last(table: str, last: list):
     connect()
-    ic(last, table)
-    cursor.execute("UPDATE array_table SET last=?", (last.remove(table),))
+    try:
+        cursor.execute("UPDATE array_table SET last=?", (last.remove(table),))
+    except ValueError:
+        return
     conn.commit()
