@@ -4,10 +4,14 @@ import datetime
 from icecream import ic
 
 
+conn, cursor = [None, None]
+
+
 def connect():
     global conn, cursor
     conn = sqlite3.connect("tables.db")
     cursor = conn.cursor()
+
 
 def create_table():
     cursor.execute("""CREATE TABLE IF NOT EXISTS array_table (
@@ -26,6 +30,7 @@ def create_table():
 
     conn.commit()
 
+
 def new_tables_set_data(array: list):
     if check_data_new_tables():
         cursor.execute("UPDATE new_tables_array SET data=?", (dumps(array),))
@@ -33,9 +38,11 @@ def new_tables_set_data(array: list):
         cursor.execute("INSERT INTO new_tables_array VALUES(?)", (dumps(array),))
     conn.commit()
 
+
 def get_new_tables() -> list:
     data = cursor.execute("SELECT data FROM new_tables_array").fetchone()
     return loads(data[0])
+
 
 def check_data_new_tables() -> True | False:
     res = cursor.execute("SELECT data FROM new_tables_array").fetchone()
@@ -43,19 +50,24 @@ def check_data_new_tables() -> True | False:
 
 
 def set_table(array: list):
+    connect()
     if check_array()[0]:
         cursor.execute(f"UPDATE array_table SET data=?", (dumps(array),))
     else:
         cursor.execute(f"INSERT INTO array_table(data) VALUES(?)", (dumps(array),))
     conn.commit()
 
+
 def check_array() -> tuple:
     connect()
     _all = cursor.execute("SELECT last, data FROM array_table").fetchone()
-    #data = cursor.execute("SELECT data FROM array_table").fetchall()
+    # data = cursor.execute("SELECT data FROM array_table").fetchall()
     return bool(_all[0]), bool(_all[1])
 
-def get_table(tables_array=[]) -> tuple:
+
+def get_table(tables_array=None) -> tuple:
+    if tables_array is None:
+        tables_array = list()
     connect()
     data, last = cursor.execute("SELECT data, last FROM array_table").fetchone()
     if last is not None:
@@ -65,6 +77,7 @@ def get_table(tables_array=[]) -> tuple:
         last = get_table()[1]
     return loads(data), last
 
+
 def set_old_table(array: list):
     if check_array()[1]:
         cursor.execute("UPDATE array_table SET last=?", (dumps(array),))
@@ -72,10 +85,12 @@ def set_old_table(array: list):
         cursor.execute("INSERT INTO array_table(last) VALUES(?)", (dumps(array),))
     conn.commit()
 
+
 def set_new_user(msg):
     time = datetime.datetime.now().strftime("%d.%m.%y : %H:%M")
     cursor.execute("INSERT INTO bot_table VALUES(?,?)", (msg.chat.id, time))
     conn.commit()
+
 
 def get_users_id():
     connect()
@@ -84,6 +99,7 @@ def get_users_id():
     for el in res:
         result.append(el[0])
     return result
+
 
 def delete_table_from_last(table: str, last: list):
     connect()

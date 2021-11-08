@@ -17,6 +17,7 @@ class SqlDb:
 
         self.get_tables()
 
+
     @classmethod
     def get_table_info(cls, table: str, time: str) -> str:
         cursor = SqlDb.connect_to_server()[1]
@@ -61,5 +62,6 @@ class SqlDb:
 
     @staticmethod
     def close_connect():
-        con.close()
-        server.close()
+        if con:
+            con.close()
+            server.close()
