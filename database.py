@@ -58,6 +58,13 @@ def set_table(array: list):
     conn.commit()
 
 
+def delete_user(msg):
+    connect()
+    cursor.execute("DELETE FROM bot_table WHERE id=?", (msg.chat.id,))
+    conn.commit()
+    return True
+
+
 def check_array() -> tuple:
     connect()
     _all = cursor.execute("SELECT last, data FROM array_table").fetchone()
@@ -87,6 +94,7 @@ def set_old_table(array: list):
 
 
 def set_new_user(msg):
+    connect()
     time = datetime.datetime.now().strftime("%d.%m.%y : %H:%M")
     cursor.execute("INSERT INTO bot_table VALUES(?,?)", (msg.chat.id, time))
     conn.commit()

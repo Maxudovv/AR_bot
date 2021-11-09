@@ -16,6 +16,8 @@ def connect_to_server():
 
 
 class SqlDb:
+    server = None
+
     def __init__(self):
         global server, con
         server = connect_to_server()
@@ -28,12 +30,14 @@ class SqlDb:
         self.get_tables()
 
     @classmethod
-    def get_table_info(cls, table: str, time: str) -> str:
+    def get_table_info(cls, table: str, time: str = None) -> str:
         cursor = SqlDb.connect_to_mysql()[1]
         cursor.execute(f"USE {db_name}")  # Подключаемся к нужному .db файлу.
         cursor.execute(f"SELECT `label`, `count` FROM `{table}`")
         res = cursor.fetchall()
-        result_str = f"<b>Заказ номер {table.upper()}:</b>\nВремя заказа:    {time}"
+        result_str = f"<b>Заказ номер {table.upper()}:</b>"
+        if time:
+            result_str += f"\nВремя заказа:    {time}"
         for order in res:
             label, count = order
             result_str += f"\n    <em>{label}    {count} шт.</em>"

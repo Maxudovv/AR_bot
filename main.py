@@ -7,7 +7,7 @@ import schedule
 
 from Sql_class import SqlDb
 import database
-from handlers import bot, done_markup
+from handlers import bot, inline_markup
 
 
 def polling():
@@ -25,13 +25,13 @@ def polling():
             except pymysql.err.ProgrammingError:
                 return
             for user in database.get_users_id():           
-                bot.send_message(user, text, reply_markup=done_markup(table))
+                bot.send_message(user, text, reply_markup=inline_markup(table))
         SqlDb.close_connect()
 
 
 def scheduler():
     # schedule.every().minute.do(polling)
-    schedule.every(10).seconds.do(polling)
+    schedule.every(15).seconds.do(polling)
     while True:
         schedule.run_pending()
         time.sleep(2)
@@ -41,3 +41,4 @@ if __name__ == "__main__":
     obj = SqlDb()
     threading.Thread(target=bot.infinity_polling).start()
     scheduler()
+    obj.server.close()
