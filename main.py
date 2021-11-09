@@ -24,7 +24,7 @@ def polling():
                 text = SqlDb.get_table_info(table, times)
             except pymysql.err.ProgrammingError:
                 return
-            for user in database.get_users_id():           
+            for user in database.get_users_id():
                 bot.send_message(user, text, reply_markup=inline_markup(table))
         SqlDb.close_connect()
 
@@ -40,5 +40,6 @@ def scheduler():
 if __name__ == "__main__":
     obj = SqlDb()
     threading.Thread(target=bot.infinity_polling).start()
+    polling()
     scheduler()
     obj.server.close()

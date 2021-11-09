@@ -27,7 +27,7 @@ class SqlDb:
         database.connect()
         database.create_table()
 
-        self.get_tables()
+        # self.get_tables()
 
     @classmethod
     def get_table_info(cls, table: str, time: str = None) -> str:
@@ -35,12 +35,16 @@ class SqlDb:
         cursor.execute(f"USE {db_name}")  # Подключаемся к нужному .db файлу.
         cursor.execute(f"SELECT `label`, `count` FROM `{table}`")
         res = cursor.fetchall()
+        cursor.execute(f"SELECT `comment` FROM `comments` WHERE `name`=\"{table}\"")
+        comments = cursor.fetchone()[0]
         result_str = f"<b>Заказ номер {table.upper()}:</b>"
         if time:
             result_str += f"\nВремя заказа:    {time}"
         for order in res:
             label, count = order
             result_str += f"\n    <em>{label}    {count} шт.</em>"
+        if comments:
+            result_str += f"\nКомментарий:\n    <em>{comments}</em>"
         return result_str
 
     @staticmethod
@@ -69,6 +73,7 @@ class SqlDb:
         tables_array = []
         for table in tables:
             tables_array.append(table[0])
+        tables_array.remove("comments")
         database.set_table(tables_array)
         return tables_array
 

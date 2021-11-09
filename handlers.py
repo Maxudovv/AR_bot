@@ -105,10 +105,7 @@ def start_handler(msg):
 
 
 def get_all_tables():
-    cursor = SqlDb.connect_to_mysql()[1]
-    cursor.execute(f"USE {db_name}")
-    cursor.execute(f"SHOW TABLES")
-    tables = cursor.fetchall()
+    tables = SqlDb.get_tables()
     if not tables:
         return "Нет невыполненных заказов."
     text = "Невыполненные заказы:"
@@ -130,6 +127,7 @@ def delete_table_from_main(table: str):
         cur.execute(f"DROP TABLE `{table}`")
     except pymysql.err.OperationalError:
         return
+    cur.execute(f"DELETE FROM `comments` WHERE name=\"{table}\"")
 
     cur.execute(f"USE {db_ready}")  # Работа с i91881_ready_orders
     cur.execute(f"INSERT INTO orders (`name`) VALUES (%s)", table)
