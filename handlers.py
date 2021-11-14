@@ -109,8 +109,14 @@ def get_all_tables():
     if not tables:
         return "Нет невыполненных заказов."
     text = "Невыполненные заказы:"
-    for table in tables:
-        text += f"\n{table[0].upper()}"
+    i = 0
+    while i < len(tables):
+        text += f"<em>\n{tables[i].upper()}</em>"
+        if i+1 < len(tables):
+            text += f"    <em>{tables[i+1]}</em>"
+            i += 2
+        else:
+            break
     return text
 
 
