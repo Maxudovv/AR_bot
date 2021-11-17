@@ -24,7 +24,7 @@ def create_table():
     cursor.execute("""CREATE TABLE IF NOT EXISTS bot_table(
         id BIGINT,
         name VARCHAR (55),
-        username VARCHAR (55)
+        username VARCHAR (55),
         reg_time TEXT
         )""")
 
@@ -96,7 +96,7 @@ def set_old_table(array: list):
 def set_new_user(msg):
     connect()
     _time = datetime.datetime.now().strftime("%d.%m.%y : %H:%M")
-    cursor.execute("INSERT INTO bot_table VALUES(?,?)", (msg.chat.id, msg.from_user.first_name,
+    cursor.execute("INSERT INTO bot_table VALUES(?,?,?,?)", (msg.chat.id, msg.from_user.first_name,
                                                          msg.from_user.username, _time))
     conn.commit()
 
